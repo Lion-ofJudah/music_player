@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.filedialog
-import os
 from core.player import Player
+from core.utils import get_current_pts_and_duration
 
 
 class Controls:
@@ -46,17 +46,25 @@ class Controls:
         This method toggles the play/pause state of the button.
         """
         if self.is_music_playing:
-            self.play_pause_button.config(image=self.play_icon)
             self.player.pause()
+            self.play_pause_button.config(image=self.play_icon)
             self.is_music_playing = False
 
         else:
-            try:
+            current_pts, duration = get_current_pts_and_duration(self.player)
+
+            is_song_playing = current_pts == 0 or current_pts < duration - 0.11
+
+            if self.file_path is not None and is_song_playing:
                 self.player.play(self.file_path.name)
                 self.play_pause_button.config(image=self.pause_icon)
                 self.is_music_playing = True
-            except AttributeError:
-                pass
+
+            else:
+                self.play_pause_button.config(image=self.pause_icon)
+                self.player.stop()
+                self.file_path = None
+                self.is_music_playing = False
 
     def open_file_explorer_button(
         self, file_icon: tk.PhotoImage, file_icon_active: tk.PhotoImage
