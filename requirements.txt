@@ -1,2 +1,3 @@
+ffmpeg-python
 ffpyplayer
 tkinter
